@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>@evx</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta property="og:description" content="god's hand">
+    <meta name="theme-color" data-react-helmet="true" content="#2B2D31">
+    <link rel="stylesheet" type="text/css" href="css/old.css">
+    <link href="https://fonts.cdnfonts.com/css/vcr-osd-mono" rel="stylesheet">
+    <style>
+        * {
+            font-family: "VCR OSD Mono", sans-serif;
+            color: white;
+        }
+        #random-gif {
+            width: 55px;
+            height: auto;
+        }
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+        .background {
+            position: relative;
+            height: 100vh;
+            width: 100vw;
+            background-color: #121212;
+            z-index: -2;
+            user-select: none;
+        }
+        .ascii-image {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(5);
+            z-index: -2;
+            user-select: none;
+        }
+        .full-page-overlay {
+            position: absolute;
+            transition: opacity 1s ease-in-out;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            user-select: none;
+        }
+        .buttons-container {
+            position: fixed;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+        }
+        .buttons-container button {
+            margin: 0 5px;
+            background-color: rgba(5, 5, 5, 0);
+            color: #bfbfbf;
+            font-size: 12px; 
+            font-weight: 550;
+            border: 2px solid transparent; 
+            border-radius: 15px; 
+            padding: 5px 10px; 
+            cursor: pointer;
+            transition: color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease; 
+            z-index: 1;
+        }
+        .buttons-container button:hover {
+            color: #ffffff; 
+            background-color: rgba(255, 255, 255, 0.1); 
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); 
+        }
+        .text-container {
+            position: fixed;
+            bottom: 5%;
+            left: 50%;
+            transform: translate(-50%, 0); 
+            width: 30%;
+            text-align: center; 
+            background-color: rgba(5, 5, 5, 0);
+            z-index: 1;
+        }
+        .text-container p {
+            color: #757575;
+            font-size: 14px;
+            margin: 0;
+            word-wrap: break-word;
+        }
+        .display-text, #random-gif, #pfp-image {
+            transition: opacity 1s ease-in-out;
+        }
+        #pfp-image {
+            width: 75px;
+            height: 75px;
+            opacity: 0;
+            object-fit: cover;
+            display: none;
+        }
+        #member-container {
+            display: none;
+            opacity: 0;
+            top: 5%;
+            transition: opacity 1s ease-in-out;
+        }
+        #main-container {
+            display: none;
+            opacity: 0;
+            top: 1%;
+            transition: opacity 1s ease-in-out;
+        }
+        #enter-container {
+            top: 7%;
+        }
+        .snowflake {
+            position: absolute;
+            display: block;
+            font-size: 16px;
+            color: #2A2A2A;
+            user-select: none;
+        }
+        .quote-container {
+            position: fixed;
+            bottom: 15%; 
+            left: 50%;
+            transform: translate(-50%, 0);
+            text-align: center;
+            z-index: 1;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+        .quote-container p {
+            color: #ffffff;
+            font-size: 14px;
+            margin: 0;
+            word-wrap: break-word;
+        }
+    </style>
+</head>
+
+<body>
+    <audio id="song" src="assets/song.mp3" autoplay loop></audio>
+
+    <div class="buttons-container" id="enter-container">
+        <button id="enter" onclick="startPage()">enter</button>
+    </div>
+
+    <div class="buttons-container" id="member-container">
+        <button onclick="bmw43()">bmw43</button>
+        <p>◦</p>
+        <button onclick="noire()">noire</button>
+    </div>
+
+    <div class="buttons-container" id="main-container">
+        <button onclick="about()">about</button>
+        <p>◦</p>
+    </div>
+
+    <div class="background">
+        <div class="ascii-image" id="image">
+            <img id="random-gif" style="width: 55px; height: auto;">
+            <img id="pfp-image">
+        </div>
+
+        <div class="full-page-overlay">
+            <img src="https://r2.interrupted.me/F/IP7h5Pne.png">
+        </div>
+    </div>
+
+    <div class="quote-container" id="quote-container">
+        <p class="quote-text"></p>
+    </div>
+
+    <div class="text-container">
+        <p class="display-text">nigger markdown text123</p>
+    </div>
+
+    <div class="snowflakes"></div>
+
+    <script src="scripts/snowflakes.js"></script>
+    <script src="scripts/index.js"></script>
+    <script>
+        let transitionActive = false;
+        var song = document.getElementById("song");
+        var current_page = "main";
+
+        var songList = [
+            "https://r2.interrupted.me/F/DReihIGF.mp3",
+            "https://r2.interrupted.me/F/GFBlt30R.mp3",
+            "https://r2.interrupted.me/F/Uiws8GeC.mp3",
+            "https://r2.interrupted.me/F/GFBlt30R.mp3",
+            "https://r2.interrupted.me/F/0TOJ1N1l.mp3",
+            "https://r2.interrupted.me/F/7qlVAFm3.mp3"
+        ];
+
+        function getRandomSong() {
+            var randomIndex = Math.floor(Math.random() * songList.length);
+            return songList[randomIndex];
+        }
+
+        function startMusic() {
+            var selectedSong = getRandomSong();
+            song.src = selectedSong;
+            song.loop = true;
+            song.volume = 0;
+            song.playbackRate = 1;
+            song.play();
+
+            var fadeInInterval = setInterval(function () {
+                song.volume += 0.1;
+                if (song.volume >= 0.7) {
+                    song.volume = 0.7;
+                    clearInterval(fadeInInterval);
+                }
+            }, 350);
+        }
+
+        function startHome() {
+            if (transitionActive) return;
+            transitionActive = true;
+
+            const displayText = document.querySelector('.display-text');
+            displayText.style.opacity = 0;
+
+            setTimeout(() => {
+                displayText.innerHTML = getRandomSentence();
+                displayText.style.opacity = 1;
+                transitionActive = false;
+            }, 2000);
+        }
+
+        function startPage() {
+            const enterButton = document.getElementById("enter-container");
+            enterButton.style.transition = "opacity 1s ease-in-out";
+            enterButton.style.opacity = 0;
+
+            setTimeout(() => {
+                const memberButtons = document.getElementById("member-container");
+                const mainButtons = document.getElementById("main-container");
+                memberButtons.style.display = "flex";
+                mainButtons.style.display = "flex";
+
+                requestAnimationFrame(() => {
+                    memberButtons.style.transition = "opacity 1s ease-in-out";
+                    memberButtons.style.opacity = 1;
+                    mainButtons.style.transition = "opacity 1s ease-in-out";
+                    mainButtons.style.opacity = 1;
+                });
+
+                enterButton.style.display = "none";
+            }, 1000);
+
+            startMusic();
+            setTimeout(startHome, 1000);
+            startQuotes();
+        }
+
+        function startQuotes() {
+            const quotes = [
+                "i <strong>will</strong>, but at what <strong>cost</strong>?<br>- To win is easy, but to win without sacrifice is impossible.",
+                "i <strong>could</strong>, but is it <strong>worth it</strong>?<br>- Some victories leave scars that outlast the reward.",
+                "i <strong>see</strong>, but do i <strong>act</strong>?<br>- Knowledge without action is like a blade left to rust.",
+                "you <strong>ask</strong>, but do you <strong>deserve</strong>?<br>- Not all who demand respect are worthy of receiving it.",
+                "i <strong>trust</strong>, but at whose <strong>expense</strong>?<br>- Loyalty given too freely becomes a weapon turned against you.",
+                "i <strong>wait</strong>, but for <strong>how long</strong>?<br>- Opportunity knocks, but hesitation bars the door.",
+                "i <strong>speak</strong>, but will they <strong>listen</strong>?<br>- A voice without weight is just noise in the wind.",
+                "<strong>strength</strong> is not in what you <strong>hold</strong>, but in what you <strong>withstand</strong>.<br>- True power is measured by what you endure, not what you control.",
+                "<strong>control</strong> is not given, it is <strong>earned</strong>.<br>- Those who cannot lead themselves will never lead others.",
+                "<strong>silence</strong> speaks when words <strong>fail</strong>.<br>- Sometimes the loudest statement is the one left unsaid."
+            ];
+
+            let currentQuoteIndex = 0;
+            const quoteContainer = document.getElementById("quote-container");
+            const quoteText = document.querySelector(".quote-text");
+
+            function showQuote() {
+                quoteText.innerHTML = quotes[currentQuoteIndex];
+                quoteContainer.style.opacity = 1;
+
+                setTimeout(() => {
+                    quoteContainer.style.opacity = 0;
+                }, 6000); 
+
+                currentQuoteIndex = (currentQuoteIndex + 1) % quotes.length;
+                setTimeout(showQuote, 9000);
+            }
+
+            showQuote();
+        }
+
+        function memberCall(pfpSrc, textContent, user) {
+            if (transitionActive) return;
+            transitionActive = true;
+
+            if (current_page === "member") {
+                const displayText = document.querySelector(".display-text");
+                const pfpImage = document.getElementById("pfp-image");
+
+                displayText.innerHTML = textContent;
+                document.title = "@evx; " + user;
+                pfpImage.src = pfpSrc;
+
+                transitionActive = false;
+            } else {
+                current_page = "member";
+                document.title = "@evx; " + user;
+                const displayText = document.querySelector(".display-text");
+                const randomGif = document.getElementById("random-gif");
+                const pfpImage = document.getElementById("pfp-image");
+
+                pfpImage.style.display = "block";
+                pfpImage.style.opacity = 1;
+
+                displayText.innerHTML = textContent;
+                pfpImage.src = pfpSrc;
+                randomGif.style.display = "none";
+
+                transitionActive = false;
+            }
+        }
+
+        function noire() {
+            memberCall(
+                "https://r2.interrupted.me/F/4WdDSxvo.jpg",
+                "dead",
+                "noire"
+            );
+        }
+
+        function bmw43() {
+            memberCall(
+                "https://r2.evanyx.lol/2e04f921bf0d32e0ac441100d7472655.jpg",
+                "dying",
+                "bmw43"
+            );
+        }
+
+        function about() {
+            updatePage(
+                "<a href='https://t.me/thisco80' target='_blank' style='color: white;'>@evx</a> is a business focused group based on negotiations & trades",
+                "about"
+            );
+        }
+
+        function updatePage(htmlContent, pageTitle) {
+            if (transitionActive) return;
+            transitionActive = true;
+            document.title = "@evx; " + pageTitle;
+            const displayText = document.querySelector(".display-text");
+
+            if (current_page !== "main") {
+                current_page = "main";
+                const randomGif = document.getElementById("random-gif");
+                const pfpImage = document.getElementById("pfp-image");
+
+                pfpImage.style.opacity = 0;
+                randomGif.style.display = "block";
+                randomGif.style.opacity = 1;
+                displayText.innerHTML = htmlContent;
+                pfpImage.style.display = "none";
+                displayText.style.opacity = 1;
+
+                transitionActive = false;
+            } else {
+                displayText.innerHTML = htmlContent;
+                transitionActive = false;
+            }
+        }
+
+        function getRandomSentence() {
+            const sentences = [
+                "@ <a href='https://t.me/thisco80' target='_blank' style='color: white;'>god's</a> right hand"
+            ];
+            const randomIndex = Math.floor(Math.random() * sentences.length);
+            return sentences[randomIndex];
+        }
+
+        var gifs = [
+            "https://r2.interrupted.me/F/jaEOenD8.gif",
+            "https://r2.interrupted.me/F/IFBodsEw.gif,"
+            "https://r2.shock.lol/m6H63RiwjYtG.png"
+        ];
+
+        function setRandomGif() {
+            var randomIndex = Math.floor(Math.random() * gifs.length);
+            var randomGif = gifs[randomIndex];
+            document.getElementById("random-gif").src = randomGif;
+
+            document.body.setAttribute("data-current-gif", randomGif);
+
+            updateButtonHoverColor();
+        }
+
+        setRandomGif();
+
+        function updateButtonHoverColor() {
+            var currentGif = document.body.getAttribute("data-current-gif");
+            var buttons = document.querySelectorAll(".buttons-container button");
+
+            buttons.forEach(function(button) {
+                button.setAttribute("data-gif", currentGif);
+            });
+        }
+    </script>
+</body>
+</html>
